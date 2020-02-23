@@ -1,0 +1,14 @@
+{
+	"rules": {
+		"prettier/prettier": "error",
+		"no-unused-vars": "warn",
+		"no-console": "off"
+	},
+	"env": {
+		"browser": true,
+		"commonjs": true,
+		"node": true,
+		"es6": true
+	},
+	"extends": ["react-app", "plugin:prettier/recommended"]
+}

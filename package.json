@@ -1,0 +1,45 @@
+{
+	"name": "covid19",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"start": "react-app-rewired start",
+		"build": "react-app-rewired build",
+		"test": "react-app-rewired test",
+		"eject": "react-scripts eject"
+	},
+	"dependencies": {
+		"@material-ui/core": "^4.9.4",
+		"@material-ui/icons": "^4.9.1",
+		"@reduxjs/toolkit": "^1.2.5",
+		"@testing-library/jest-dom": "^4.2.4",
+		"@testing-library/react": "^9.3.2",
+		"@testing-library/user-event": "^7.1.2",
+		"axios": "^0.19.2",
+		"react": "^16.12.0",
+		"react-dom": "^16.12.0",
+		"react-redux": "^7.2.0",
+		"react-scripts": "3.4.0"
+	},
+	"devDependencies": {
+		"customize-cra": "^0.9.1",
+		"customize-cra-react-refresh": "^1.0.1",
+		"eslint-config-prettier": "^6.10.0",
+		"eslint-plugin-prettier": "^3.1.2",
+		"prettier": "^1.19.1",
+		"react-app-rewired": "^2.1.5"
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"last 2 versions",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version",
+			"last 1 ie version"
+		]
+	}
+}
