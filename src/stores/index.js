@@ -1,9 +1,9 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
-import counter from './counter'
+import map from './map'
 
 // define rootReducer
 const rootReducer = combineReducers({
-	counter,
+	map,
 })
 
 // define store
