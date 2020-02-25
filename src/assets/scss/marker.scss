@@ -1,0 +1,88 @@
+.c-popup {
+	.leaflet-popup-content-wrapper {
+		border-radius: 8px;
+	}
+	.leaflet-popup-content {
+		margin: 10px;
+	}
+	.c-popup-wrap {
+		font-size: 15px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 5px;
+	}
+	.c-popup-date {
+		font-weight: bold;
+	}
+	.c-popup-num {
+		font-weight: bold;
+		color: #2196f3;
+	}
+	.c-popup-loc {
+		font-size: 14px;
+	}
+}
+
+.c-div-icon {
+	$size: 40px;
+	$border-width: 2px;
+	border-radius: $size / 2;
+	line-height: $size - $border-width * 2;
+	border: $border-width solid #ffffff;
+	box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.6);
+	color: #fff;
+	text-align: center;
+	font-size: 11px;
+	&.status-0 {
+		background-color: rgba(#4caf50, 0.85);
+	}
+	&.status-1 {
+		background-color: rgba(#ffc107, 0.85);
+	}
+	&.status-2 {
+		background-color: rgba(#ff0a0a, 0.85);
+	}
+}
+
+$color-small: #f44336;
+$color-medium: #ff5722;
+$color-large: #f44336;
+@mixin marker-color($color, $opacity) {
+	background-color: rgba($color, $opacity);
+	div {
+		background-color: rgba($color, $opacity);
+	}
+}
+@mixin marker-color-fallback($color) {
+	background-color: $color;
+	div {
+		background-color: $color;
+	}
+}
+.marker-cluster-small {
+	@include marker-color($color-small, 0.7);
+}
+.marker-cluster-medium {
+	@include marker-color($color-medium, 0.85);
+}
+.marker-cluster-large {
+	@include marker-color($color-large, 0.85);
+}
+/* IE 6-8 fallback colors */
+.leaflet-oldie .marker-cluster-small {
+	@include marker-color-fallback($color-small);
+}
+.leaflet-oldie .marker-cluster-medium {
+	@include marker-color-fallback($color-medium);
+}
+.leaflet-oldie .marker-cluster-large {
+	@include marker-color-fallback($color-large);
+}
+.marker-cluster {
+	div {
+		color: #fff;
+		font-family: 'Noto Sans KR', sans-serif;
+		font-weight: bold;
+	}
+}

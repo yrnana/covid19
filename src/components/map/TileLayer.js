@@ -9,7 +9,7 @@ function TileLayer() {
 	useEffect(() => {
 		layerRef.current = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 			maxZoom: 19,
-			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>',
 		}).addTo(map)
 
 		return function cleanup() {

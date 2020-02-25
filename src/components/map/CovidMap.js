@@ -1,11 +1,25 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import BaseMap from './BaseMap'
-import Marker from './Marker'
+import MarkerGroup from './MarkerGroup'
 
 function CovidMap() {
+	const [paths, setPaths] = useState([])
+
+	useEffect(() => {
+		async function fetch() {
+			const { data } = await axios.get('/api/path')
+			setPaths(data)
+		}
+		fetch()
+	}, [])
+
 	return (
 		<BaseMap>
-			<Marker />
+			{/* {paths.map(path => (
+				<Marker key={path._id} path={path} />
+			))} */}
+			<MarkerGroup paths={paths} />
 		</BaseMap>
 	)
 }
