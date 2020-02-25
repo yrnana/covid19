@@ -1,17 +1,26 @@
-import React from 'react'
-import { styled } from '@material-ui/core/styles'
-import { Box } from '@material-ui/core'
-import CovidMap from 'components/map/CovidMap'
+import React, { lazy, Suspense } from 'react'
+import { CircularProgress, Box } from '@material-ui/core'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
-const Wrapper = styled(Box)({
-	height: '100vh',
-})
+const Home = lazy(() => import('./pages/Home'))
+const Admin = lazy(() => import('./pages/Admin'))
 
-function App() {
+const Loading = () => (
+	<Box position="relative" display="flex" alignItems="center" justifyContent="center">
+		<CircularProgress />
+	</Box>
+)
+
+const App = () => {
 	return (
-		<Wrapper>
-			<CovidMap />
-		</Wrapper>
+		<Router>
+			<Suspense fallback={<Loading />}>
+				<Switch>
+					<Route exact path="/" component={Home} />
+					<Route exact path="/admin" component={Admin} />
+				</Switch>
+			</Suspense>
+		</Router>
 	)
 }
 
