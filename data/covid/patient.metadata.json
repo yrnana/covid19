@@ -1,1 +1,1 @@
-{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"covid.patient"},{"v":{"$numberInt":"2"},"key":{"number":{"$numberInt":"1"}},"name":"number_1","ns":"covid.patient"}],"uuid":"0325766dd1924781a2589aab38a53fc6"}
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"covid.patient"},{"v":2,"key":{"number":1},"name":"number_1","ns":"covid.patient"}],"uuid":"214cff9045e14e3f92a61253134502e8"}
