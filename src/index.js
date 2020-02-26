@@ -9,13 +9,13 @@ import { Provider } from 'react-redux'
 
 // material
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
-import { purple, red } from '@material-ui/core/colors'
+import { purple, blue } from '@material-ui/core/colors'
 import CssBaseline from '@material-ui/core/CssBaseline'
 
 const theme = createMuiTheme({
 	palette: {
-		primary: purple,
-		secondary: red,
+		primary: blue,
+		secondary: purple,
 	},
 	typography: {
 		fontFamily: "'Noto Sans KR', sans-serif",

@@ -1,18 +1,25 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, memo } from 'react'
 import { Box, TextField, Typography, Grid, Button } from '@material-ui/core'
 import { useForm } from 'react-hook-form'
 import { format } from 'date-fns'
 import axios from 'axios'
 
-function AddPathForm() {
+function AddPathForm({ setPaths }) {
 	const { register, handleSubmit, reset } = useForm()
 
 	const onSubmit = useCallback(
 		async values => {
-			await axios.post('/api/add', values)
-			reset({ date: values.date })
+			const { patient_number, date, latitude, longitude } = values
+			const { data } = await axios.post('/api/path', {
+				...values,
+				patient_number: parseInt(patient_number),
+				latitude: parseFloat(latitude),
+				longitude: parseFloat(longitude),
+			})
+			reset({ patient_number, date })
+			setPaths(paths => [...paths, data])
 		},
-		[reset]
+		[reset, setPaths]
 	)
 
 	return (
@@ -49,7 +56,7 @@ function AddPathForm() {
 					<Grid item xs={12} sm={6}>
 						<TextField
 							label="장소 설명"
-							name="location_name"
+							name="location_desc"
 							required
 							fullWidth
 							inputRef={register}
@@ -79,7 +86,7 @@ function AddPathForm() {
 					</Grid>
 				</Grid>
 				<Grid item xs={12}>
-					<Button type="submit" color="primary" variant="contained">
+					<Button type="submit" color="primary" variant="contained" disableElevation>
 						등록
 					</Button>
 				</Grid>
@@ -88,4 +95,4 @@ function AddPathForm() {
 	)
 }
 
-export default AddPathForm
+export default memo(AddPathForm)

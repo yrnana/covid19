@@ -7,6 +7,20 @@ const app = new Koa()
 app.use(logger())
 app.use(bodyParser())
 
+// Error Handler
+app.use(async (ctx, next) => {
+	try {
+		await next()
+	} catch (err) {
+		ctx.status = err.statusCode || err.status || 500
+		ctx.body = { message: err.message }
+		ctx.app.emit('error', err, ctx)
+	}
+})
+app.on('error', (err, ctx) => {
+	console.error(err)
+})
+
 // Add Router
 const router = require('./route')
 app.use(router.routes()).use(router.allowedMethods())

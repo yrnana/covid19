@@ -1,5 +1,7 @@
 import React, { memo, useRef, useCallback } from 'react'
-import { Box, List, ListItem } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+import { Box, List, ListItem, IconButton } from '@material-ui/core'
+import DeleteIcon from '@material-ui/icons/Delete'
 import axios from 'axios'
 import { useDrag, useDrop, DndProvider } from 'react-dnd'
 import Backend from 'react-dnd-html5-backend'
@@ -8,7 +10,74 @@ const ItemTypes = {
 	PATH: 'PATH',
 }
 
-function PathItem({ path, index, moveItem, updatePaths }) {
+const useStyles = makeStyles(theme => ({
+	listItem: {
+		cursor: 'pointer',
+	},
+	iconButton: {
+		margin: -14,
+		marginLeft: 0,
+	},
+}))
+
+function PathList({ paths, setPaths }) {
+	// 드래그 할 때마다 순서를 바꾼다
+	const updatePath = useCallback(
+		(dragIndex, hoverIndex) => {
+			setPaths(paths => {
+				const dragged = paths.splice(dragIndex, 1)
+				const front = paths.slice(0, hoverIndex)
+				const back = paths.slice(hoverIndex)
+				front.push(dragged[0])
+				return front.concat(back)
+			})
+		},
+		[setPaths]
+	)
+
+	// 드래그 완료시 서버로 현재 순서 전송
+	const updatePaths = useCallback(async () => {
+		const data = paths.map((path, i) => ({ _id: path._id, order: i + 1 }))
+		await axios.patch('/api/path', data)
+	}, [paths])
+
+	// 삭제
+	const deletePath = useCallback(
+		async _id => {
+			if (window.confirm('이 경로를 삭제하시겠습니까?')) {
+				await axios.delete(`/api/path/${_id}`)
+				setPaths(paths => {
+					const idx = paths.findIndex(x => x._id === _id)
+					return [...paths.slice(0, idx), ...paths.slice(idx + 1)]
+				})
+			}
+		},
+		[setPaths]
+	)
+
+	return (
+		<DndProvider backend={Backend}>
+			<Box component={List} mt={2}>
+				{paths.map((path, index) => (
+					<PathItem
+						key={path._id}
+						index={index}
+						path={path}
+						updatePath={updatePath}
+						updatePaths={updatePaths}
+						deletePath={deletePath}
+					/>
+				))}
+			</Box>
+		</DndProvider>
+	)
+}
+
+export default memo(PathList)
+
+function PathItem({ path, index, updatePath, updatePaths, deletePath }) {
+	const classes = useStyles()
+
 	const ref = useRef(null)
 
 	const [, drop] = useDrop({
@@ -35,7 +104,7 @@ function PathItem({ path, index, moveItem, updatePaths }) {
 				return
 			}
 
-			moveItem(dragIndex, hoverIndex)
+			updatePath(dragIndex, hoverIndex)
 			item.index = hoverIndex
 		},
 		drop(item, monitor) {
@@ -54,51 +123,18 @@ function PathItem({ path, index, moveItem, updatePaths }) {
 
 	drag(drop(ref))
 	return (
-		<ListItem divider ref={ref} style={{ opacity }}>
-			<Box mr={2} width={35} fontWeight={600}>
+		<ListItem disableGutters divider className={classes.listItem} style={{ opacity }} ref={ref}>
+			<Box mr={1.5} width={35} fontWeight={600}>
 				{path.date}
 			</Box>
-			<Box>{path.location_name}</Box>
+			<Box mr="auto">{path.location_desc}</Box>
+			<IconButton
+				onClick={() => deletePath(path._id)}
+				className={classes.iconButton}
+				aria-label="delete"
+			>
+				<DeleteIcon />
+			</IconButton>
 		</ListItem>
 	)
 }
-
-function PathList({ paths, setPaths }) {
-	// 드래그 할 때마다 순서를 바꾼다
-	const moveItem = useCallback(
-		(dragIndex, hoverIndex) => {
-			setPaths(paths => {
-				const dragged = paths.splice(dragIndex, 1)
-				const front = paths.slice(0, hoverIndex)
-				const back = paths.slice(hoverIndex)
-				front.push(dragged[0])
-				return front.concat(back)
-			})
-		},
-		[setPaths]
-	)
-
-	// 드래그 완료시 서버로 현재 순서 전송
-	const updatePaths = useCallback(async () => {
-		const data = paths.map((path, i) => ({ _id: path._id, order: i + 1 }))
-		await axios.patch('/api/path', data)
-	}, [paths])
-
-	return (
-		<DndProvider backend={Backend}>
-			<Box component={List} mt={2}>
-				{paths.map((path, index) => (
-					<PathItem
-						key={path._id}
-						index={index}
-						path={path}
-						moveItem={moveItem}
-						updatePaths={updatePaths}
-					/>
-				))}
-			</Box>
-		</DndProvider>
-	)
-}
-
-export default memo(PathList)
