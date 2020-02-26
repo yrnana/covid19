@@ -3,6 +3,9 @@ const router = new Router({ prefix: '/api' })
 
 const { format, differenceInCalendarDays } = require('date-fns')
 
+/**
+ * 확진자 이동 경로 조회
+ */
 router.get('/path', async (ctx, next) => {
 	const { db } = ctx
 	const data = await db
@@ -25,7 +28,18 @@ router.get('/path', async (ctx, next) => {
 	})
 })
 
+/**
+ * 확진자 이동 경로 추가
+ */
 router.post('/add', async (ctx, next) => {
+	console.log(ctx.request.body)
+	ctx.body = ''
+})
+
+/**
+ * 확진자 별 경로 순서 변경
+ */
+router.patch('/path', async (ctx, next) => {
 	console.log(ctx.request.body)
 	ctx.body = ''
 })

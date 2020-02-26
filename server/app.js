@@ -1,8 +1,10 @@
 const Koa = require('koa')
 const bodyParser = require('koa-bodyparser')
+const logger = require('koa-logger')
 const { MongoClient } = require('mongodb')
 
 const app = new Koa()
+app.use(logger())
 app.use(bodyParser())
 
 // Add Router

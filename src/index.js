@@ -19,6 +19,7 @@ const theme = createMuiTheme({
 	},
 	typography: {
 		fontFamily: "'Noto Sans KR', sans-serif",
+		fontWeightMedium: 600,
 	},
 })
 
