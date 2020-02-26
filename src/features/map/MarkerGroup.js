@@ -4,14 +4,14 @@ import { MarkerClusterGroup } from 'leaflet.markercluster/src'
 import { MapContext } from './BaseMap'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
-import 'assets/scss/marker.scss'
+import './Marker.scss'
 
 function MarkerGroup({ paths }) {
 	const map = useContext(MapContext)
 	const markerGroupRef = useRef(null)
 
 	useEffect(() => {
-		console.log('MarkerGroup useEffect', paths.length)
+		console.count('MarkerGroup useEffect', paths.length)
 		if (paths.length > 0) {
 			const clusterOpts = { showCoverageOnHover: false }
 			markerGroupRef.current = (options => new MarkerClusterGroup(options))(clusterOpts)
@@ -36,14 +36,14 @@ function MarkerGroup({ paths }) {
 		}
 
 		return () => {
-			console.log('MarkerGroup cleanup')
+			console.count('MarkerGroup cleanup')
 			if (map && markerGroupRef.current) {
 				markerGroupRef.current.remove()
 			}
 		}
 	}, [map, paths])
 
-	console.log('MarkerGroup Render')
+	console.count('MarkerGroup Render')
 	return null
 }
 

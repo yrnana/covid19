@@ -16,9 +16,6 @@ function CovidMap() {
 
 	return (
 		<BaseMap>
-			{/* {paths.map(path => (
-				<Marker key={path._id} path={path} />
-			))} */}
 			<MarkerGroup paths={paths} />
 		</BaseMap>
 	)

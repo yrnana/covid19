@@ -4,7 +4,7 @@ import App from './App'
 import * as serviceWorker from './serviceWorker'
 
 // redux
-import store from './stores'
+import store from './store'
 import { Provider } from 'react-redux'
 
 // material

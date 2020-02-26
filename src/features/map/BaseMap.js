@@ -1,7 +1,6 @@
 import React, { createContext, useRef, useEffect, useReducer } from 'react'
 import L from './leaflet'
 import TileLayer from './TileLayer'
-import 'assets/scss/leaflet.scss'
 
 export const MapContext = createContext(null)
 
@@ -12,7 +11,7 @@ function BaseMap({ children }) {
 	const mapRef = useRef(null)
 
 	useEffect(() => {
-		console.log('BaseMap useEffect')
+		console.count('BaseMap useEffect')
 		if (!mapRef.current) {
 			mapRef.current = L.map(mapEl.current, {
 				center: [36.37706783983682, 127.84240722656251],
@@ -26,13 +25,13 @@ function BaseMap({ children }) {
 			forceUpdate()
 		}
 		return () => {
-			console.log('BaseMap cleanup')
+			console.count('BaseMap cleanup')
 			mapRef.current.remove()
 			mapRef.current = null
 		}
 	}, [forceUpdate])
 
-	console.log('BaseMap Render')
+	console.count('BaseMap Render')
 	return (
 		<div style={{ width: '100vw', height: '100vh' }} ref={mapEl}>
 			{mapRef.current && (
