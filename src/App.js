@@ -6,7 +6,13 @@ const Home = lazy(() => import('./pages/Home'))
 const Admin = lazy(() => import('./pages/Admin'))
 
 const Loading = () => (
-	<Box position="relative" display="flex" alignItems="center" justifyContent="center">
+	<Box
+		position="relative"
+		display="flex"
+		alignItems="center"
+		justifyContent="center"
+		height="100vh"
+	>
 		<CircularProgress />
 	</Box>
 )

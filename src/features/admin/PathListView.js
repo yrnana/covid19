@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import { Box, Typography, Select, MenuItem } from '@material-ui/core'
-import { countBy, sortBy } from 'lodash'
+import { countBy, sortBy, partition } from 'lodash'
 import PathList from './PathList'
 
 function PathListView({ paths, setPaths }) {
@@ -9,13 +9,14 @@ function PathListView({ paths, setPaths }) {
 
 	// handle select change
 	const handleChange = event => {
-		setPatientNumber(parseInt(event.target.value))
+		setPatientNumber(event.target.value)
 	}
 
 	// select 메뉴 arr
 	const patientNumbers = useMemo(() => {
-		const group = countBy(paths, 'patient_number')
-		return sortBy(Object.keys(group).map(x => parseInt(x)))
+		const group = Object.keys(countBy(paths, 'patient_number'))
+		const [numbers, strings] = partition(group, s => /^\d+$/.test(s))
+		return sortBy(numbers).concat(sortBy(strings))
 	}, [paths])
 
 	// select의 확진자번호에 해당하는 paths

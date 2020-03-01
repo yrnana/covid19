@@ -1,14 +1,11 @@
-import React, { memo, useRef, useCallback } from 'react'
+import React, { memo, useCallback } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, List, ListItem, IconButton } from '@material-ui/core'
+import MenuIcon from '@material-ui/icons/Menu'
 import DeleteIcon from '@material-ui/icons/Delete'
+import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc'
 import axios from 'axios'
-import { useDrag, useDrop, DndProvider } from 'react-dnd'
-import Backend from 'react-dnd-html5-backend'
-
-const ItemTypes = {
-	PATH: 'PATH',
-}
+import { differenceBy, pick } from 'lodash'
 
 const useStyles = makeStyles(theme => ({
 	listItem: {
@@ -20,26 +17,58 @@ const useStyles = makeStyles(theme => ({
 	},
 }))
 
-function PathList({ paths, setPaths }) {
-	// 드래그 할 때마다 순서를 바꾼다
-	const updatePath = useCallback(
-		(dragIndex, hoverIndex) => {
-			setPaths(paths => {
-				const dragged = paths.splice(dragIndex, 1)
-				const front = paths.slice(0, hoverIndex)
-				const back = paths.slice(hoverIndex)
-				front.push(dragged[0])
-				return front.concat(back)
-			})
-		},
-		[setPaths]
-	)
+const DragHandle = sortableHandle(() => <MenuIcon color="action" />)
 
+const SortableItem = sortableElement(({ path, deletePath }) => {
+	const classes = useStyles()
+
+	return (
+		<ListItem disableGutters divider className={classes.listItem}>
+			<DragHandle />
+			<Box mx={1.5} width={35} fontWeight={600}>
+				{path.date}
+			</Box>
+			<Box mr="auto">{path.location_desc}</Box>
+			<IconButton
+				onClick={() => deletePath(path._id)}
+				className={classes.iconButton}
+				aria-label="delete"
+			>
+				<DeleteIcon />
+			</IconButton>
+		</ListItem>
+	)
+})
+
+const SortableContainer = sortableContainer(({ children }) => {
+	return (
+		<Box component={List} mt={2}>
+			{children}
+		</Box>
+	)
+})
+
+function PathList({ paths, setPaths }) {
 	// 드래그 완료시 서버로 현재 순서 전송
-	const updatePaths = useCallback(async () => {
-		const data = paths.map((path, i) => ({ _id: path._id, order: i + 1 }))
-		await axios.patch('/api/path', data)
-	}, [paths])
+	const onSortEnd = async ({ oldIndex, newIndex }) => {
+		const array = [...paths]
+		const startIndex = newIndex < 0 ? array.length + newIndex : newIndex
+		const item = array.splice(oldIndex, 1)[0]
+		array.splice(startIndex, 0, item)
+		const data = array.map((path, i) => ({ ...path, order: i + 1 }))
+
+		// path를 바꿈
+		setPaths(paths => {
+			const newPaths = differenceBy(paths, data, '_id')
+			return newPaths.concat(data)
+		})
+
+		// 서버에 전송
+		await axios.patch(
+			'/api/path',
+			data.map(x => pick(x, ['_id', 'order']))
+		)
+	}
 
 	// 삭제
 	const deletePath = useCallback(
@@ -56,85 +85,12 @@ function PathList({ paths, setPaths }) {
 	)
 
 	return (
-		<DndProvider backend={Backend}>
-			<Box component={List} mt={2}>
-				{paths.map((path, index) => (
-					<PathItem
-						key={path._id}
-						index={index}
-						path={path}
-						updatePath={updatePath}
-						updatePaths={updatePaths}
-						deletePath={deletePath}
-					/>
-				))}
-			</Box>
-		</DndProvider>
+		<SortableContainer onSortEnd={onSortEnd} useDragHandle>
+			{paths.map((path, index) => (
+				<SortableItem key={path._id} index={index} path={path} deletePath={deletePath} />
+			))}
+		</SortableContainer>
 	)
 }
 
 export default memo(PathList)
-
-function PathItem({ path, index, updatePath, updatePaths, deletePath }) {
-	const classes = useStyles()
-
-	const ref = useRef(null)
-
-	const [, drop] = useDrop({
-		accept: ItemTypes.PATH,
-		hover(item, monitor) {
-			if (!ref.current) return
-
-			const dragIndex = item.index
-			const hoverIndex = index
-
-			// Don't replace items with themselves
-			if (dragIndex === hoverIndex) return
-
-			const hoverBoundingRect = ref.current.getBoundingClientRect()
-			const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
-			const clientOffset = monitor.getClientOffset()
-			const hoverClientY = clientOffset.y - hoverBoundingRect.top
-
-			// Dragging downwards / upwards
-			if (
-				(dragIndex < hoverIndex && hoverClientY < hoverMiddleY) ||
-				(dragIndex > hoverIndex && hoverClientY > hoverMiddleY)
-			) {
-				return
-			}
-
-			updatePath(dragIndex, hoverIndex)
-			item.index = hoverIndex
-		},
-		drop(item, monitor) {
-			updatePaths()
-		},
-	})
-
-	const [{ isDragging }, drag] = useDrag({
-		item: { id: path._id, index, type: ItemTypes.PATH },
-		collect: monitor => ({
-			isDragging: monitor.isDragging(),
-		}),
-	})
-
-	const opacity = isDragging ? 0 : 1
-
-	drag(drop(ref))
-	return (
-		<ListItem disableGutters divider className={classes.listItem} style={{ opacity }} ref={ref}>
-			<Box mr={1.5} width={35} fontWeight={600}>
-				{path.date}
-			</Box>
-			<Box mr="auto">{path.location_desc}</Box>
-			<IconButton
-				onClick={() => deletePath(path._id)}
-				className={classes.iconButton}
-				aria-label="delete"
-			>
-				<DeleteIcon />
-			</IconButton>
-		</ListItem>
-	)
-}

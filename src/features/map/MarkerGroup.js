@@ -16,17 +16,25 @@ function MarkerGroup({ paths }) {
 			const clusterOpts = { showCoverageOnHover: false }
 			markerGroupRef.current = (options => new MarkerClusterGroup(options))(clusterOpts)
 			paths.forEach(path => {
+				let patient_number = path.patient_number
+				let idx = patient_number.search(/\d/)
+				if (idx === 0) {
+					patient_number = '#' + patient_number
+				} else {
+					patient_number =
+						patient_number.substring(0, idx) + '#' + patient_number.substring(idx)
+				}
 				const latlng = path.coordinates
 				const myIcon = L.divIcon({
 					iconSize: [40, 40],
-					html: `#${path.patient_number}`,
+					html: patient_number,
 					className: `c-div-icon status-${path.status}`,
 				})
 				const options = { radius: 15, icon: myIcon }
 				const popup =
 					`<div class="c-popup-wrap">` +
 					`<div class="c-popup-date">${path.date}</div>` +
-					`<div class="c-popup-num">#${path.patient_number}</div></div>` +
+					`<div class="c-popup-num">${patient_number}</div></div>` +
 					`<div class="c-popup-loc">${path.location_desc}</div>`
 				const popupOptions = { className: 'c-popup', minWidth: 100, closeButton: false }
 				const customMarker = L.marker(latlng, options).bindPopup(popup, popupOptions)
